@@ -5,7 +5,8 @@ Abstract
 --------
 
 作業シーンの移動をアシストしてくれるエディタ拡張
-![SceneMenuImage](https://github.com/wataru-ito/SceneMenu/blob/master/scenemenu_image)!
+
+![image](https://github.com/wataru-ito/SceneMenu/blob/master/scenemenu_image.png)!
 
 
 
