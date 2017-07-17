@@ -160,7 +160,7 @@ namespace SceneMenu
 				Directory.CreateDirectory(dir);
 			}
 
-			var assetPath = dir + "/SceneMenu.cs";
+			var assetPath = dir + "/SceneMenuCode.cs";
 			if (File.Exists(assetPath) && File.ReadAllText(assetPath) == code)
 			{
 				Debug.Log("SceneMenu generate skipped");
