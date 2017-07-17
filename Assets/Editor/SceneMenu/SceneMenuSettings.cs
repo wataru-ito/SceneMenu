@@ -16,6 +16,15 @@ namespace SceneMenu
 		public List<string> grouping = new List<string>();
 
 
+		public void CopyFrom(SceneMenuSettings src)
+		{
+			this.outputDirectoryPath = src.outputDirectoryPath;
+			this.targets = new List<string>(src.targets);
+			this.ignores = new List<string>(src.ignores);
+			this.grouping = new List<string>(src.grouping);
+		}
+
+
 		//------------------------------------------------------
 		// accessor
 		//------------------------------------------------------
@@ -23,6 +32,12 @@ namespace SceneMenu
 		public bool IsIgnorePath(string assetPath)
 		{
 			return ignores.FindIndex(i => assetPath.StartsWith(i)) >= 0;
+		}
+
+		public string GetScriptPath()
+		{
+			return string.Format("{0}/SceneMenuCode.cs",
+				string.IsNullOrEmpty(outputDirectoryPath) ? kDefaultDerectory : outputDirectoryPath);
 		}
 
 

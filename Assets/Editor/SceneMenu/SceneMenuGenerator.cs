@@ -154,13 +154,14 @@ namespace SceneMenu
 
 		void WriteFile(string code)
 		{
-			var dir = string.IsNullOrEmpty(m_settings.outputDirectoryPath) ? SceneMenuSettings.kDefaultDerectory : m_settings.outputDirectoryPath;
+			var assetPath = m_settings.GetScriptPath();
+
+			var dir = Path.GetDirectoryName(assetPath);
 			if (!Directory.Exists(dir))
 			{
 				Directory.CreateDirectory(dir);
 			}
 
-			var assetPath = dir + "/SceneMenuCode.cs";
 			if (File.Exists(assetPath) && File.ReadAllText(assetPath) == code)
 			{
 				Debug.Log("SceneMenu generate skipped");
