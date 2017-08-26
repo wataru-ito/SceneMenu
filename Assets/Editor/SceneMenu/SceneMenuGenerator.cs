@@ -123,11 +123,8 @@ namespace SceneMenu
 
 		static string ToFuncName(string assetPath)
 		{
-			// .unity と .unity3d の場合があるので
-			var extentionLength = Path.GetExtension(assetPath).Length;
-
-			var funcName = assetPath.Replace("/", "");
-			return funcName.Remove(funcName.Length - extentionLength, extentionLength);
+			var funcName = assetPath.Replace("/", "_");
+			return new System.Text.RegularExpressions.Regex(@"[^0-9a-zA-Z_]+").Replace(funcName, "");
 		}
 
 		string ToMenuItemPath(string assetPath)
@@ -139,8 +136,8 @@ namespace SceneMenu
 				{
 					// 1文字入れ替えたいだけなんだけどなあ。もっと軽い方法...
 					menuPath = string.Format("{0}/{1}",
-						menuPath.Remove(group.Length, menuPath.Length - group.Length),
-						menuPath.Remove(0, group.Length + 1));
+						menuPath.Remove(group.Length),
+						menuPath.Substring(group.Length + 1));
 				}
 			}
 
