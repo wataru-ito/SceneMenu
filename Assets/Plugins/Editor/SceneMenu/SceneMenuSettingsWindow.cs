@@ -33,10 +33,18 @@ namespace SceneMenu
 		// static function
 		//------------------------------------------------------
 
+		static SceneMenuSettingsWindow s_intance;
+
 		[MenuItem("Scene/設定", false, 0)]
 		public static SceneMenuSettingsWindow Open()
 		{
-			return GetWindow<SceneMenuSettingsWindow>();
+			if (!s_intance)
+			{
+				s_intance = CreateInstance<SceneMenuSettingsWindow>();
+				s_intance.ShowUtility();
+			}
+
+			return s_intance;
 		}
 
 
@@ -46,6 +54,8 @@ namespace SceneMenu
 
 		void OnEnable()
 		{
+			s_intance = this; // 表示状態で生成モード切替挟んだ時の対応
+
 			titleContent = new GUIContent("SceneMenu設定");
 
 			m_origin = SceneMenuSettings.Load();
