@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using System.IO;
@@ -6,22 +7,36 @@ using System.IO;
 
 namespace SceneMenu
 {
-	public class SceneMenuSettings : ScriptableObject
+	[Serializable]
+	public class SceneMenuSettings
 	{
+		const string kSettingFilePath = "ProjectSettings/SceneMenuSettings.txt";
 		public const string kDefaultDerectory = "Assets/Editor";
 
 		public string outputDirectoryPath;
-		public List<string> targets = new List<string>();
-		public List<string> ignores = new List<string>();
-		public List<string> grouping = new List<string>();
+		public List<string> targets;
+		public List<string> ignores;
+		public List<string> grouping;
 
 
-		public void CopyFrom(SceneMenuSettings src)
+		//------------------------------------------------------
+		// lifetime
+		//------------------------------------------------------
+
+		private SceneMenuSettings()
 		{
-			this.outputDirectoryPath = src.outputDirectoryPath;
-			this.targets = new List<string>(src.targets);
-			this.ignores = new List<string>(src.ignores);
-			this.grouping = new List<string>(src.grouping);
+			outputDirectoryPath = string.Empty;
+			targets = new List<string>();
+			ignores = new List<string>();
+			grouping = new List<string>();
+		}
+
+		public SceneMenuSettings(SceneMenuSettings src)
+		{
+			outputDirectoryPath = src.outputDirectoryPath;
+			targets = new List<string>(src.targets);
+			ignores = new List<string>(src.ignores);
+			grouping = new List<string>(src.grouping);
 		}
 
 
@@ -47,24 +62,41 @@ namespace SceneMenu
 
 		public static SceneMenuSettings Load()
 		{
-			var GUIDs = AssetDatabase.FindAssets("SceneMenuSettings t:SceneMenuSettings");
-			if (GUIDs.Length == 0)
-			{
-				if (!Directory.Exists("Assets/Editor Default Resources"))
-					Directory.CreateDirectory("Assets/Editor Default Resources");
-
-				var instance = ScriptableObject.CreateInstance<SceneMenuSettings>();
-				AssetDatabase.CreateAsset(instance, "Assets/Editor Default Resources/SceneMenuSettings.asset");
-				return instance;
-			}
-
-			return AssetDatabase.LoadAssetAtPath<SceneMenuSettings>(
-				AssetDatabase.GUIDToAssetPath(GUIDs[0]));
+			var settings = new SceneMenuSettings();
+			settings.Revert();
+			return settings;
 		}
 
-		public void Save()
+		public void Revert()
 		{
-			EditorUtility.SetDirty(this);
+			try
+			{
+				if (File.Exists(kSettingFilePath))
+				{
+					var json = File.ReadAllText(kSettingFilePath);
+					EditorJsonUtility.FromJsonOverwrite(json, this);
+				}
+			}
+			catch (Exception e)
+			{
+				Debug.LogError(e.Message);
+			}
+		}
+
+		public bool Save()
+		{
+			try
+			{
+				var json = EditorJsonUtility.ToJson(this);
+				File.WriteAllText(kSettingFilePath, json);
+			}
+			catch (Exception e)
+			{
+				Debug.LogError(e.Message);
+				return false;
+			}
+
+			return true;
 		}
 	}
 }
