@@ -14,9 +14,8 @@ namespace SceneMenu
 
 		static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
 		{
-			// 新規追加時はimportedAssetsなんだけど入れちゃうと頻度高いので抜く
-			//if (ContainsScene(importedAssets) ||
-			if (ContainsScene(deletedAssets) ||
+			if (ContainsScene(importedAssets) ||
+				ContainsScene(deletedAssets) ||
 				ContainsScene(movedAssets))
 			{
 				if (!s_queued)

@@ -70,8 +70,10 @@ namespace SceneMenu
 
 			var scenePaths = GetTargetScenes();
 			var code = CodeGenerate(scenePaths);
-			WriteFile(code);
-			AssetDatabase.Refresh();
+			if (WriteFile(code))
+			{
+				AssetDatabase.Refresh();
+			}
 		}
 
 
@@ -149,7 +151,7 @@ namespace SceneMenu
 		// file
 		//------------------------------------------------------
 
-		void WriteFile(string code)
+		bool WriteFile(string code)
 		{
 			var assetPath = m_settings.GetScriptPath();
 
@@ -162,12 +164,13 @@ namespace SceneMenu
 			if (File.Exists(assetPath) && File.ReadAllText(assetPath) == code)
 			{
 				Debug.Log("SceneMenu generate skipped");
-				return;
+				return false;
 			}
 
 			File.WriteAllText(assetPath, code);
-
 			Debug.LogFormat("SceneMenu generate [{0}]", assetPath);
+
+			return true;
 		}
 	}
 }
