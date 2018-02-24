@@ -35,7 +35,7 @@ namespace SceneMenu
 
 		static SceneMenuSettingsWindow s_intance;
 
-		[MenuItem("Scene/設定", false, 0)]
+		[MenuItem("Scene/設定", false, -101)]
 		public static SceneMenuSettingsWindow Open()
 		{
 			if (!s_intance)

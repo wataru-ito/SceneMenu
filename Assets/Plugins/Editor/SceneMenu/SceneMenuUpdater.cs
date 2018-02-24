@@ -36,7 +36,7 @@ namespace SceneMenu
 		// menu
 		//------------------------------------------------------
 
-		[MenuItem("Scene/更新", false, 1)]
+		[MenuItem("Scene/更新", false, -100)]
 		public static void GenerateSceneMenu()
 		{
 			s_queued = false;

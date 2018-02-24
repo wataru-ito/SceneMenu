@@ -103,7 +103,8 @@ namespace SceneMenu
 				var code = template.GenerateItemCode(
 					ToFuncName(assetPath),
 					ToMenuItemPath(assetPath),
-					assetPath);
+					assetPath, 
+					100);
 
 				itemCode.Append(code);
 			}
