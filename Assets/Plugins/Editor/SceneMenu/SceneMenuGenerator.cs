@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -56,6 +57,8 @@ namespace SceneMenu
 					.Replace(kTagPriority, priority.ToString());
 			}
 		}
+
+		const string kFuncNameRemovePattern = @"[^0-9a-zA-Z_]+"; 
 
 		SceneMenuSettings m_settings;
 
@@ -127,23 +130,19 @@ namespace SceneMenu
 		static string ToFuncName(string assetPath)
 		{
 			var funcName = assetPath.Replace("/", "_");
-			return new System.Text.RegularExpressions.Regex(@"[^0-9a-zA-Z_]+").Replace(funcName, "");
+			return Regex.Replace(funcName, kFuncNameRemovePattern, "");
 		}
 
 		string ToMenuItemPath(string assetPath)
 		{
-			var menuPath = assetPath.Replace('/', '|');
-			foreach (var group in m_settings.grouping)
+			var menuPath = assetPath.Replace('/', '|'); // '|'以前の文字は表示されないっぽい
+			foreach (var group in m_settings.grouping.Where(i => assetPath.StartsWith(i) && assetPath[i.Length] == '/'))
 			{
-				if (assetPath.StartsWith(group))
-				{
-					// 1文字入れ替えたいだけなんだけどなあ。もっと軽い方法...
-					menuPath = string.Format("{0}/{1}",
-						menuPath.Remove(group.Length),
-						menuPath.Substring(group.Length + 1));
-				}
+				// 1文字入れ替えたいだけなんだけどなあ。もっと軽い方法...
+				menuPath = string.Format("{0}/{1}",
+					menuPath.Remove(group.Length),
+					menuPath.Substring(group.Length + 1));
 			}
-
 			return "Scene/" + menuPath;
 		}
 
