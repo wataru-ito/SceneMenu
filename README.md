@@ -5,6 +5,11 @@
 
 ![image](README_files/scenemenu_image.jpg)
 
+## パッケージファイル
+
+[パッケージファイルはココ](./SceneMenu.unitypackage)<br>
+※サンプルは含まれていません
+
 
 ## カスタマイズ
 
@@ -27,3 +32,7 @@
 【除外】　そのフォルダを検索対象外とする
 【階層】　メニュー上で１階層下げる（まとめる）
 ```
+
+### 設定保存先
+
+ProjectSettings/SceneMenuSettings.txt
