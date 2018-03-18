@@ -10,12 +10,14 @@ namespace SceneMenu
 	{
 		const float kItemHeight = 18f;
 
-		readonly string[] kTab =
+		readonly GUIContent[] kTab =
 		{
-			"限定",
-			"除外",
-			"階層",
+			new GUIContent("限定", "シーンの検索範囲を限定します"),
+			new GUIContent("除外", "シーンの検索範囲から除外されます"),
+			new GUIContent("階層", "メニューに表示される際のグルーピングを指定します"),
 		};
+
+		readonly GUIContent kDirContent = new GUIContent("コード出力先", "コードが出力されるディレクトリを指定");
 
 		SceneMenuSettings m_origin;
 		SceneMenuSettings m_settings;
@@ -58,17 +60,14 @@ namespace SceneMenu
 
 			titleContent = new GUIContent("SceneMenu設定");
 
+			m_labelStyle = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Scene).FindStyle("Hi Label");
+
 			m_origin = SceneMenuSettings.Load();
 			Revert();
 		}
 
 		void OnGUI()
 		{
-			if (m_labelStyle == null)
-			{
-				m_labelStyle = GUI.skin.FindStyle("Hi Label");
-			}
-
 			using (new EditorGUILayout.HorizontalScope())
 			{
 				if (GUILayout.Button("Apply", "ButtonLeft"))
@@ -83,8 +82,10 @@ namespace SceneMenu
 
 			GUILayout.Space(8);
 
+			EditorGUIUtility.labelWidth = 80;
+
 			EditorGUI.BeginChangeCheck();
-			m_output = EditorGUILayout.ObjectField("出力", m_output, typeof(DefaultAsset), false) as DefaultAsset;
+			m_output = EditorGUILayout.ObjectField(kDirContent, m_output, typeof(DefaultAsset), false) as DefaultAsset;
 			if (EditorGUI.EndChangeCheck())
 			{
 				m_settings.outputDirectoryPath = m_output ? AssetDatabase.GetAssetPath(m_output) : string.Empty;
@@ -273,8 +274,7 @@ namespace SceneMenu
 			Selection.activeObject = AssetDatabase.LoadAssetAtPath<DefaultAsset>(m_current[index]);
 		}
 
-
-
+		
 		//------------------------------------------------------
 		// settings
 		//------------------------------------------------------
@@ -295,7 +295,7 @@ namespace SceneMenu
 				m_origin = new SceneMenuSettings(m_settings);
 			}
 
-			SceneMenuUpdater.GenerateSceneMenu();
+			SceneMenuUpdater.UpdateSceneMenu();
 		}
 
 		void Revert()

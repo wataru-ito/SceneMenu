@@ -8,7 +8,7 @@ using System.IO;
 namespace SceneMenu
 {
 	[Serializable]
-	public class SceneMenuSettings
+	class SceneMenuSettings
 	{
 		const string kSettingFilePath = "ProjectSettings/SceneMenuSettings.txt";
 		public const string kDefaultDerectory = "Assets/Editor";

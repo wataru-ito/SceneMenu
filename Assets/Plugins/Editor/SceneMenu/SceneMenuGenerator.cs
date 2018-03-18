@@ -8,7 +8,7 @@ using UnityEditor;
 
 namespace SceneMenu
 {
-	public class SceneMenuGenerator
+	class SceneMenuGenerator
 	{
 		SceneMenuSettings m_settings;
 

@@ -21,7 +21,7 @@ namespace SceneMenu
 				if (!s_queued)
 				{
 					s_queued = true;
-					EditorApplication.delayCall += GenerateSceneMenu;
+					EditorApplication.delayCall += UpdateSceneMenu;
 				}
 			}
 		}
@@ -37,7 +37,7 @@ namespace SceneMenu
 		//------------------------------------------------------
 
 		[MenuItem("Scene/更新", false, -100)]
-		public static void GenerateSceneMenu()
+		public static void UpdateSceneMenu()
 		{
 			s_queued = false;
 
