@@ -1,65 +1,15 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine;
+using UnityEditor;
 
 namespace SceneMenu
 {
 	public class SceneMenuGenerator
 	{
-		class CodeTemplate
-		{
-			const string kTagBegin = "##MENU_LIST_BEGIN##";
-			const string kTagEnd = "##MENU_LIST_END##";
-			const string kTagMenuName = "##MENU_NAME##";
-			const string kTagMenuPath = "##MENU_ITEM_PATH##";
-			const string kTagAssetPath = "##ASSET_PATH##";
-			const string kTagPriority = "##PRIORITY##";
-
-			string m_body;
-			int m_itemInsertIndex;
-			string m_item;
-
-			public CodeTemplate(string raw)
-			{
-				var begin = raw.IndexOf(kTagBegin);
-				if (begin < 0)
-				{
-					throw new Exception(string.Format("SceneMenuCodeTemplate need tag[{0}]", kTagBegin));
-				}
-
-				var end = raw.IndexOf(kTagEnd);
-				if (end < 0)
-				{
-					throw new Exception(string.Format("SceneMenuCodeTemplate need tag[{0}]", kTagEnd));
-				}
-
-				m_body = raw.Remove(begin, end+kTagEnd.Length-begin);
-				m_itemInsertIndex = begin;
-
-				var beginTail = begin + kTagBegin.Length;
-				m_item = raw.Substring(beginTail, end-beginTail);
-			}
-
-			public string GenerateCode(string itemCode)
-			{
-				return m_body.Insert(m_itemInsertIndex, itemCode);
-			}
-
-			public string GenerateItemCode(string funcName, string menuPath, string assetPath, int priority = 10)
-			{
-				return m_item.Replace(kTagMenuName, funcName)
-					.Replace(kTagMenuPath, menuPath)
-					.Replace(kTagAssetPath, assetPath)
-					.Replace(kTagPriority, priority.ToString());
-			}
-		}
-
-		const string kFuncNameRemovePattern = @"[^0-9a-zA-Z_]+"; 
-
 		SceneMenuSettings m_settings;
 
 
@@ -71,12 +21,14 @@ namespace SceneMenu
 		{
 			m_settings = SceneMenuSettings.Load();
 
-			var scenePaths = GetTargetScenes();
-			var code = CodeGenerate(scenePaths);
-			if (WriteFile(code))
-			{
-				AssetDatabase.Refresh();
-			}
+			var code = GenerateCode();
+			if (string.IsNullOrEmpty(code))
+				return;
+
+			if (!WriteCode(code))
+				return;
+
+			AssetDatabase.Refresh();
 		}
 
 
@@ -96,45 +48,40 @@ namespace SceneMenu
 		// code generate
 		//------------------------------------------------------
 
-		string CodeGenerate(IEnumerable<string> assetPaths)
+		string GenerateCode()
 		{
-			var template = LoadTempate();
+			var template = SceneMenuCodeTemplate.LoadTempate();
+			if (template == null)
+				return null;
 
-			var itemCode = new System.Text.StringBuilder();
-			foreach (var assetPath in assetPaths)
+			var code = new System.Text.StringBuilder();
+			foreach (var assetPath in GetTargetScenes())
 			{
-				var code = template.GenerateItemCode(
+				var itemCode = template.GenerateItemCode(
 					ToFuncName(assetPath),
 					ToMenuItemPath(assetPath),
 					assetPath, 
 					100);
 
-				itemCode.Append(code);
+				code.Append(itemCode);
 			}
 
-			return template.GenerateCode(itemCode.ToString());
-		}
-
-		CodeTemplate LoadTempate()
-		{
-			var GUIDs = AssetDatabase.FindAssets("SceneMenuCodeTemplate t:TextAsset");
-			if (GUIDs.Length == 0)
-			{
-				throw new Exception("SceneMenuCodeTemplate not found");
-			}
-
-			var textAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(AssetDatabase.GUIDToAssetPath(GUIDs[0]));
-			return new CodeTemplate(textAsset.text);
+			return template.GenerateCode(code.ToString());
 		}
 
 		static string ToFuncName(string assetPath)
 		{
+			// アセット名には使えて関数名には使えない文字
+			// > アセットに使えない文字 /?<>:*|"
+			// > アセット名に使えた文字 +-%&~^!#$'_.,@`;()[]{}
+			const string kFuncNameRemovePattern = @"[=\+\-%&~\^!#$'_\.,@\`;\(\)\[\]\{\}]+";
+
 			var funcName = assetPath.Replace("/", "_");
 			return Regex.Replace(funcName, kFuncNameRemovePattern, "");
 		}
 
 		string ToMenuItemPath(string assetPath)
-		{
+		{	
 			var menuPath = assetPath.Replace('/', '|'); // '|'以前の文字は表示されないっぽい
 			foreach (var group in m_settings.grouping.Where(i => assetPath.StartsWith(i) && assetPath[i.Length] == '/'))
 			{
@@ -151,26 +98,34 @@ namespace SceneMenu
 		// file
 		//------------------------------------------------------
 
-		bool WriteFile(string code)
+		bool WriteCode(string code)
 		{
-			var assetPath = m_settings.GetScriptPath();
-
-			var dir = Path.GetDirectoryName(assetPath);
-			if (!Directory.Exists(dir))
+			try
 			{
-				Directory.CreateDirectory(dir);
+				var assetPath = m_settings.GetScriptPath();
+
+				var dir = Path.GetDirectoryName(assetPath);
+				if (!Directory.Exists(dir))
+				{
+					Directory.CreateDirectory(dir);
+				}
+
+				if (File.Exists(assetPath) && File.ReadAllText(assetPath) == code)
+				{
+					Debug.Log("SceneMenu generate skipped");
+					return false;
+				}
+
+				File.WriteAllText(assetPath, code);
+				Debug.LogFormat("SceneMenu generate [{0}]", assetPath);
+
+				return true;
 			}
-
-			if (File.Exists(assetPath) && File.ReadAllText(assetPath) == code)
+			catch (Exception e)
 			{
-				Debug.Log("SceneMenu generate skipped");
+				Debug.LogError(e.Message);
 				return false;
 			}
-
-			File.WriteAllText(assetPath, code);
-			Debug.LogFormat("SceneMenu generate [{0}]", assetPath);
-
-			return true;
 		}
 	}
 }
