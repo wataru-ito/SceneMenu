@@ -50,7 +50,7 @@ namespace SceneMenu
 
 		string GenerateCode()
 		{
-			var template = SceneMenuCodeTemplate.LoadTempate();
+			var template = SceneMenuCode.LoadTempate();
 			if (template == null)
 				return null;
 

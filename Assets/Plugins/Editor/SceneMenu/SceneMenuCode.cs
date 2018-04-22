@@ -4,7 +4,7 @@ using UnityEditor;
 
 namespace SceneMenu
 {
-	class SceneMenuCodeTemplate
+	class SceneMenuCode
 	{
 		const string kTagBegin = "##MENU_LIST_BEGIN##";
 		const string kTagEnd = "##MENU_LIST_END##";
@@ -22,7 +22,7 @@ namespace SceneMenu
 		// static function
 		//------------------------------------------------------
 
-		public static SceneMenuCodeTemplate LoadTempate()
+		public static SceneMenuCode LoadTempate()
 		{
 			var GUIDs = AssetDatabase.FindAssets("SceneMenuCodeTemplate t:TextAsset");
 			if (GUIDs.Length == 0)
@@ -34,7 +34,7 @@ namespace SceneMenu
 			}
 
 			var textAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(AssetDatabase.GUIDToAssetPath(GUIDs[0]));
-			return new SceneMenuCodeTemplate(textAsset.text);
+			return new SceneMenuCode(textAsset.text);
 		}
 
 
@@ -42,7 +42,7 @@ namespace SceneMenu
 		// accessor
 		//------------------------------------------------------
 		
-		public SceneMenuCodeTemplate(string raw)
+		public SceneMenuCode(string raw)
 		{
 			var begin = raw.IndexOf(kTagBegin);
 			if (begin < 0)
