@@ -51,7 +51,7 @@ namespace SceneMenu
 
 		public string GetScriptPath()
 		{
-			return string.Format("{0}/SceneMenuCode.cs",
+			return string.Format("{0}/SceneMenuItem.cs",
 				string.IsNullOrEmpty(outputDirectoryPath) ? kDefaultDerectory : outputDirectoryPath);
 		}
 
