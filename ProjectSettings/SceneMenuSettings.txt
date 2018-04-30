@@ -1,1 +1,13 @@
-{"outputDirectoryPath":"","targets":[],"ignores":["Assets/Scenes/Ignore"],"grouping":["Assets/Scenes/Group","Assets/Scenes/Group/Child"]}
+{
+"outputDirectoryPath":"",
+"targets":[
+
+],
+"ignores":[
+"Assets/Scenes/Ignore"
+],
+"grouping":[
+"Assets/Scenes/Group",
+"Assets/Scenes/Group/Child"
+]
+}
