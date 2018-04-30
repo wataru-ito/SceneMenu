@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.IO;
 
 
@@ -51,7 +52,7 @@ namespace SceneMenu
 
 		public string GetScriptPath()
 		{
-			return string.Format("{0}/SceneMenuCode.cs",
+			return string.Format("{0}/SceneMenuItem.cs",
 				string.IsNullOrEmpty(outputDirectoryPath) ? kDefaultDerectory : outputDirectoryPath);
 		}
 
@@ -88,6 +89,9 @@ namespace SceneMenu
 			try
 			{
 				var json = EditorJsonUtility.ToJson(this);
+				// diffがわかりやすいように改行挟む
+				json = Regex.Replace(json, @"[,\[\{]", i => i.Value + "\n");
+				json = Regex.Replace(json, @"[\]\}]", i => "\n" + i.Value);
 				File.WriteAllText(kSettingFilePath, json);
 			}
 			catch (Exception e)

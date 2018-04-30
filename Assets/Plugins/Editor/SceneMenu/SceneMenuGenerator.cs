@@ -74,7 +74,7 @@ namespace SceneMenu
 			// アセット名には使えて関数名には使えない文字
 			// > アセットに使えない文字 /?<>:*|"
 			// > アセット名に使えた文字 +-%&~^!#$'_.,@`;()[]{}
-			const string kFuncNameRemovePattern = @"[=\+\-%&~\^!#$'_\.,@\`;\(\)\[\]\{\}]+";
+			const string kFuncNameRemovePattern = @"[=\+\-%&~\^!#$'_\.,@\`;\(\)\[\]\{\}\s]+";
 
 			var funcName = assetPath.Replace("/", "_");
 			return Regex.Replace(funcName, kFuncNameRemovePattern, "");
