@@ -35,10 +35,10 @@ public static class SceneMenuItem
 		EditorSceneManager.OpenScene(@"Assets/Scenes/Scene2.unity");
 	}
 	
-	[MenuItem(@"Scene/Assets|Scenes|特殊文字=+-%&!^~#$@'`()[]{};,._.unity", false, 100)]
+	[MenuItem(@"Scene/Assets|Scenes|特殊文字 =+-%&!^~#$@'`()[]{};,._.unity", false, 100)]
 	static void OpenAssetsScenes特殊文字unity()
 	{
-		EditorSceneManager.OpenScene(@"Assets/Scenes/特殊文字=+-%&!^~#$@'`()[]{};,._.unity");
+		EditorSceneManager.OpenScene(@"Assets/Scenes/特殊文字 =+-%&!^~#$@'`()[]{};,._.unity");
 	}
 	
 }
